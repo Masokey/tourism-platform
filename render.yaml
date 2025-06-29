@@ -1,0 +1,30 @@
+services:
+  # Backend Service
+  - type: web
+    name: tourism-backend
+    env: python
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    startCommand: "cd backend && python src/main.py"
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: DATABASE_URL
+        generateValue: true
+    
+  # Frontend Service  
+  - type: static
+    name: tourism-frontend
+    buildCommand: "cd frontend && pnpm install && pnpm run build"
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: tourism-backend
+          property: host
+
+databases:
+  - name: tourism-db
+    databaseName: tourism_platform
+    user: tourism_user
+
